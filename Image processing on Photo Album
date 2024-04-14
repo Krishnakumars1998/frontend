@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Album</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Photo Album</h1>
+        <div id="imageContainer">
+            <!-- Images will be displayed here -->
+        </div>
+        <button onclick="checkTone()">Check Image Tone</button>
+        <button onclick="makeReddish()">Make Reddish</button>
+        <!-- Add more buttons for other operations -->
+    </div>
+
+    <script>
+        // Functions to perform image processing operations
+
+        // Check if image is reddish
+        function checkTone() {
+            // Implementation to check image tone
+            // Example: iterate through pixels, compare R, G, B values
+            // Update UI accordingly
+        }
+
+        // Make image reddish
+        function makeReddish() {
+            // Implementation to make image reddish
+            // Example: iterate through pixels, adjust R values
+            // Update UI with modified image
+        }
+
+        // Function to display images in the container
+        function displayImage(imageUrl) {
+            const imageContainer = document.getElementById('imageContainer');
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.classList.add('img-fluid', 'm-2');
+            imageContainer.appendChild(imgElement);
+        }
+
+        // Sample code to test displayImage function
+        const sampleImageUrl = 'sample.jpg';
+        displayImage(sampleImageUrl);
+    </script>
+</body>
+</html>
