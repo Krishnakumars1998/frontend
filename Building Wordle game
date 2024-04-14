@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle</title>
+    <style>
+        .keypad button {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wordle</h1>
+    <div>
+        <input type="text" id="guessInput" maxlength="5">
+        <button onclick="guessWord()">Guess</button>
+    </div>
+    <div class="keypad">
+        <!-- Add buttons for each alphabet -->
+        <button onclick="appendLetter('A')">A</button>
+        <button onclick="appendLetter('B')">B</button>
+        <button onclick="appendLetter('C')">C</button>
+        <button onclick="appendLetter('D')">D</button>
+        <button onclick="appendLetter('E')">E</button>
+        <button onclick="appendLetter('F')">F</button>
+        <button onclick="appendLetter('G')">G</button>
+        <button onclick="appendLetter('H')">H</button>
+        <button onclick="appendLetter('I')">I</button>
+        <button onclick="appendLetter('J')">J</button>
+        <button onclick="appendLetter('K')">K</button>
+        <button onclick="appendLetter('L')">L</button>
+        <button onclick="appendLetter('M')">M</button>
+        <button onclick="appendLetter('N')">N</button>
+        <button onclick="appendLetter('O')">O</button>
+        <button onclick="appendLetter('P')">P</button>
+        <button onclick="appendLetter('Q')">Q</button>
+        <button onclick="appendLetter('R')">R</button>
+        <button onclick="appendLetter('S')">S</button>
+        <button onclick="appendLetter('T')">T</button>
+        <button onclick="appendLetter('U')">U</button>
+        <button onclick="appendLetter('V')">V</button>
+        <button onclick="appendLetter('W')">W</button>
+        <button onclick="appendLetter('X')">X</button>
+        <button onclick="appendLetter('Y')">Y</button>
+        <button onclick="appendLetter('Z')">Z</button>
+        <button onclick="removeLetter()">Backspace</button>
+    </div>
+    <script>
+        const secretWord = 'APPLE'; // Change this to set the secret word
+        let currentGuess = '';
+
+        function appendLetter(letter) {
+            if (currentGuess.length < 5) {
+                currentGuess += letter;
+                updateGuessInput();
+            }
+        }
+
+        function removeLetter() {
+            if (currentGuess.length > 0) {
+                currentGuess = currentGuess.slice(0, -1);
+                updateGuessInput();
+            }
+        }
+
+        function updateGuessInput() {
+            document.getElementById('guessInput').value = currentGuess;
+        }
+
+        function guessWord() {
+            if (currentGuess.length === 5) {
+                if (currentGuess.toUpperCase() === secretWord) {
+                    alert('Congratulations! You guessed the word correctly!');
+                } else {
+                    alert('Incorrect guess. Please try again.');
+                }
+                resetGuess();
+            } else {
+                alert('Please enter a 5-letter word.');
+            }
+        }
+
+        function resetGuess() {
+            currentGuess = '';
+            updateGuessInput();
+        }
+    </script>
+</body>
+</html>
