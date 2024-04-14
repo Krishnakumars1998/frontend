@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 3em;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board">
+        <div class="cell" onclick="makeMove(0)"></div>
+        <div class="cell" onclick="makeMove(1)"></div>
+        <div class="cell" onclick="makeMove(2)"></div>
+        <div class="cell" onclick="makeMove(3)"></div>
+        <div class="cell" onclick="makeMove(4)"></div>
+        <div class="cell" onclick="makeMove(5)"></div>
+        <div class="cell" onclick="makeMove(6)"></div>
+        <div class="cell" onclick="makeMove(7)"></div>
+        <div class="cell" onclick="makeMove(8)"></div>
+    </div>
+    <button onclick="undo()">Undo</button>
+
+    <script>
+        let currentPlayer = 'X';
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let singlePlayerMode = false; // Change this to true for single-player mode
+
+        // Function to handle player's move
+        function makeMove(index) {
+            if (board[index] === '' && !isGameOver()) {
+                board[index] = currentPlayer;
+                document.getElementById('board').children[index].innerText = currentPlayer;
+                if (isGameOver()) {
+                    setTimeout(() => {
+                        alert(getWinner() || 'It\'s a draw!');
+                        resetBoard();
+                    }, 100);
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    if (singlePlayerMode && currentPlayer === 'O') {
+                        // Implement AI move calculation here for single-player mode
+                        // For now, AI will make a random move
+                        let emptyCells = board.reduce((acc, cell, idx) => cell === '' ? acc.concat(idx) : acc, []);
+                        let aiMove = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                        makeMove(aiMove);
+                    }
+                }
+            }
+        }
+
+        // Function to undo the last move
+        function undo() {
+            if (!isGameOver()) {
+                let lastMoveIndex = board.lastIndexOf(currentPlayer);
+                if (lastMoveIndex !== -1) {
+                    board[lastMoveIndex] = '';
+                    document.getElementById('board').children[lastMoveIndex].innerText = '';
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                }
+            }
+        }
+
+        // Function to check if the game is over
+        function isGameOver() {
+            return getWinner() || board.every(cell => cell !== '');
+        }
+
+        // Function to get the winner
+        function getWinner() {
+            const winConditions = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            for (let condition of winConditions) {
+                const [a, b, c] = condition;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            return null;
+        }
+
+        // Function to reset the board
+        function resetBoard() {
+            currentPlayer = 'X';
+            board = ['', '', '', '', '', '', '', '', ''];
+            Array.from(document.getElementsByClassName('cell')).forEach(cell => cell.innerText = '');
+        }
+    </script>
+</body>
+</html>
