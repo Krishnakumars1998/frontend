@@ -3,49 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Album</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Image Processing Operations</title>
+    <style>
+        #imageContainer {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Photo Album</h1>
-        <div id="imageContainer">
-            <!-- Images will be displayed here -->
-        </div>
-        <button onclick="checkTone()">Check Image Tone</button>
-        <button onclick="makeReddish()">Make Reddish</button>
-        <!-- Add more buttons for other operations -->
+    <h1>Image Processing Operations</h1>
+    <div>
+        <input type="file" accept="image/*" onchange="uploadImage(event)">
+    </div>
+    <div id="imageContainer"></div>
+    <div>
+        <button onclick="checkImageColor()">Check Color</button>
+        <button onclick="makeImageReddish()">Make Reddish</button>
+        <button onclick="makeImageBlueish()">Make Blueish</button>
+        <button onclick="makeImageGreenish()">Make Greenish</button>
+        <button onclick="duplicateImage()">Duplicate Image</button>
+        <button onclick="increaseBrightness()">Increase Brightness</button>
+        <button onclick="reduceResolution()">Reduce Resolution</button>
+        <button onclick="createAvatar()">Create Avatar</button>
+        <button onclick="convertToGrayscale()">Convert to Grayscale</button>
+        <button onclick="generateQRCode()">Generate QR Code</button>
+        <button onclick="filterImages()">Filter Images</button>
+        <button onclick="createThumbnails()">Create Thumbnails</button>
     </div>
 
     <script>
-        // Functions to perform image processing operations
+        var selectedImage = null;
 
-        // Check if image is reddish
-        function checkTone() {
-            // Implementation to check image tone
-            // Example: iterate through pixels, compare R, G, B values
-            // Update UI accordingly
+        function uploadImage(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            
+            var imageContainer = document.getElementById('imageContainer');
+            var img = document.createElement('img');
+            img.onload = function() {
+                selectedImage = img;
+            }
+            img.src = URL.createObjectURL(file);
+            img.id = 'selectedImage';
+            imageContainer.innerHTML = '';
+            imageContainer.appendChild(img);
         }
 
-        // Make image reddish
-        function makeReddish() {
-            // Implementation to make image reddish
-            // Example: iterate through pixels, adjust R values
-            // Update UI with modified image
+        function checkImageColor() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var pixels = imageData.data;
+            var redCount = 0;
+            var greenCount = 0;
+            var blueCount = 0;
+
+            for (var i = 0; i < pixels.length; i += 4) {
+                var red = pixels[i];
+                var green = pixels[i + 1];
+                var blue = pixels[i + 2];
+                if (red > green + blue) {
+                    redCount++;
+                } else if (green > red + blue) {
+                    greenCount++;
+                } else if (blue > red + green) {
+                    blueCount++;
+                }
+            }
+
+            var totalPixels = pixels.length / 4;
+            var redPercentage = (redCount / totalPixels) * 100;
+            var greenPercentage = (greenCount / totalPixels) * 100;
+            var bluePercentage = (blueCount / totalPixels) * 100;
+
+            var dominantColor;
+            if (redPercentage > 50) {
+                dominantColor = 'Reddish';
+            } else if (greenPercentage > 50) {
+                dominantColor = 'Greenish';
+            } else if (bluePercentage > 50) {
+                dominantColor = 'Blueish';
+            } else {
+                dominantColor = 'None';
+            }
+
+            alert('Dominant Color: ' + dominantColor);
         }
 
-        // Function to display images in the container
-        function displayImage(imageUrl) {
-            const imageContainer = document.getElementById('imageContainer');
-            const imgElement = document.createElement('img');
-            imgElement.src = imageUrl;
-            imgElement.classList.add('img-fluid', 'm-2');
-            imageContainer.appendChild(imgElement);
+        function makeImageReddish() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+
+            for (var i = 0; i < data.length; i += 4) {
+                data[i] += 50;
+                data[i + 1] -= 25;
+                data[i + 2] -= 25;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            img.src = canvas.toDataURL();
         }
 
-        // Sample code to test displayImage function
-        const sampleImageUrl = 'sample.jpg';
-        displayImage(sampleImageUrl);
+        function makeImageBlueish() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+
+            for (var i = 0; i < data.length; i += 4) {
+                data[i] -= 25;
+                data[i + 1] -= 25;
+                data[i + 2] += 50;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            img.src = canvas.toDataURL();
+        }
+
+        function makeImageGreenish() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+
+            for (var i = 0; i < data.length; i += 4) {
+                data[i] -= 25;
+                data[i + 1] += 50;
+                data[i + 2] -= 25;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            img.src = canvas.toDataURL();
+        }
+
+        function duplicateImage() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var newImg = img.cloneNode(true);
+            document.getElementById('imageContainer').appendChild(newImg);
+        }
+
+        function increaseBrightness() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            Caman(img, function () {
+                this.brightness(20).render();
+            });
+        }
+
+        function reduceResolution() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            Caman(img, function () {
+                this.resize({ width: img.width / 2, height: img.height / 2 }).render();
+            });
+        }
+
+        function createAvatar() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                console.error('Image element not found.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            img.src = canvas.toDataURL();
+        }
+
+        function convertToGrayscale() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                console.error('Image element not found.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+
+            for (var i = 0; i < data.length; i += 4) {
+                var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;
+                data[i + 1] = avg;
+                data[i + 2] = avg;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            img.src = canvas.toDataURL();
+        }
+
+        function generateQRCode() {
+            var url = window.location.href;
+            var qrCode = new QRCode(document.getElementById("qrcode"), {
+                width: 200,
+                height: 200
+            });
+            qrCode.makeCode(url); 
+        }
+
+        function filterImages() {
+            var images = document.getElementsByTagName('img');
+            var altText = prompt("Enter alt text to filter images:");
+
+            for (var i = 0; i < images.length; i++) {
+                var img = images[i];
+                if (img.alt.toLowerCase().includes(altText.toLowerCase())) {
+                    img.style.display = 'inline-block';
+                } else {
+                    img.style.display = 'none';
+                }
+            }
+        }
+
+        function createThumbnails() {
+            var img = document.getElementById('selectedImage');
+            if (!img) {
+                alert('Please load an image first.');
+                return;
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            img.src = canvas.toDataURL();
+        }
     </script>
 </body>
 </html>
