@@ -5,89 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle</title>
     <style>
-        .keypad button {
-            width: 40px;
-            height: 40px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+        }
+        .wordle-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .word-input {
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            padding: 10px;
             font-size: 1.2em;
-            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <h1>Wordle</h1>
-    <div>
-        <input type="text" id="guessInput" maxlength="5">
-        <button onclick="guessWord()">Guess</button>
+    <div class="wordle-container">
+        <h1>Wordle</h1>
+        <input type="text" class="word-input" id="wordInput" maxlength="5" placeholder="Enter your guess">
+        <button class="submit-btn" onclick="checkGuess()">Submit</button>
+        <div class="feedback" id="feedback"></div>
     </div>
-    <div class="keypad">
-        <!-- Add buttons for each alphabet -->
-        <button onclick="appendLetter('A')">A</button>
-        <button onclick="appendLetter('B')">B</button>
-        <button onclick="appendLetter('C')">C</button>
-        <button onclick="appendLetter('D')">D</button>
-        <button onclick="appendLetter('E')">E</button>
-        <button onclick="appendLetter('F')">F</button>
-        <button onclick="appendLetter('G')">G</button>
-        <button onclick="appendLetter('H')">H</button>
-        <button onclick="appendLetter('I')">I</button>
-        <button onclick="appendLetter('J')">J</button>
-        <button onclick="appendLetter('K')">K</button>
-        <button onclick="appendLetter('L')">L</button>
-        <button onclick="appendLetter('M')">M</button>
-        <button onclick="appendLetter('N')">N</button>
-        <button onclick="appendLetter('O')">O</button>
-        <button onclick="appendLetter('P')">P</button>
-        <button onclick="appendLetter('Q')">Q</button>
-        <button onclick="appendLetter('R')">R</button>
-        <button onclick="appendLetter('S')">S</button>
-        <button onclick="appendLetter('T')">T</button>
-        <button onclick="appendLetter('U')">U</button>
-        <button onclick="appendLetter('V')">V</button>
-        <button onclick="appendLetter('W')">W</button>
-        <button onclick="appendLetter('X')">X</button>
-        <button onclick="appendLetter('Y')">Y</button>
-        <button onclick="appendLetter('Z')">Z</button>
-        <button onclick="removeLetter()">Backspace</button>
-    </div>
+
     <script>
-        const secretWord = 'APPLE'; // Change this to set the secret word
-        let currentGuess = '';
+        const words = ["apple", "banana", "orange", "grape", "kiwi", "peach", "pear", "melon", "mango", "strawberry"];
+        let targetWord = "";
+        let guesses = 0;
 
-        function appendLetter(letter) {
-            if (currentGuess.length < 5) {
-                currentGuess += letter;
-                updateGuessInput();
+        function initializeGame() {
+            targetWord = words[Math.floor(Math.random() * words.length)];
+            guesses = 0;
+            document.getElementById('feedback').innerText = "";
+            console.log("Target word:", targetWord);
+        }
+
+        function checkGuess() {
+            const guess = document.getElementById('wordInput').value.toLowerCase().trim();
+            if (!validateGuess(guess)) {
+                alert("Please enter a valid 5-letter word with no repeated letters.");
+                return;
             }
-        }
-
-        function removeLetter() {
-            if (currentGuess.length > 0) {
-                currentGuess = currentGuess.slice(0, -1);
-                updateGuessInput();
+            guesses++;
+            const feedback = getFeedback(guess);
+            document.getElementById('feedback').innerText = feedback;
+            if (feedback === "You win!") {
+                alert(`Congratulations! You guessed the word "${targetWord}" in ${guesses} guesses.`);
+                initializeGame();
             }
+            document.getElementById('wordInput').value = "";
         }
 
-        function updateGuessInput() {
-            document.getElementById('guessInput').value = currentGuess;
+        function validateGuess(guess) {
+            return /^[a-z]{5}$/i.test(guess) && new Set(guess).size === guess.length;
         }
 
-        function guessWord() {
-            if (currentGuess.length === 5) {
-                if (currentGuess.toUpperCase() === secretWord) {
-                    alert('Congratulations! You guessed the word correctly!');
+        function getFeedback(guess) {
+            if (guess === targetWord) {
+                return "You win!";
+            }
+            let feedback = "";
+            for (let i = 0; i < guess.length; i++) {
+                if (guess[i] === targetWord[i]) {
+                    feedback += "●";
+                } else if (targetWord.includes(guess[i])) {
+                    feedback += "○";
                 } else {
-                    alert('Incorrect guess. Please try again.');
+                    feedback += "◻";
                 }
-                resetGuess();
-            } else {
-                alert('Please enter a 5-letter word.');
             }
+            return feedback;
         }
 
-        function resetGuess() {
-            currentGuess = '';
-            updateGuessInput();
-        }
+        initializeGame();
     </script>
 </body>
 </html>
